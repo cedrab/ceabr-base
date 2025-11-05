@@ -1,4 +1,4 @@
-import Image from "next/image";
+/*import Image from "next/image";
 
 export default function Home() {
   return (
@@ -62,4 +62,34 @@ export default function Home() {
       </main>
     </div>
   );
+}*/
+
+'use client'
+
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+
+export default function Home() {
+  const [data, setData] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase.from('users').select('*')
+      if (error) setError(error.message)
+      else setData(data)
+    }
+    fetchData()
+  }, [])
+
+  return (
+    <div className="p-10">
+      <h1 className="text-2xl font-bold mb-4">Test Supabase</h1>
+      {error ? (
+        <p className="text-red-600">Erreur : {error}</p>
+      ) : (
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      )}
+    </div>
+  )
 }
