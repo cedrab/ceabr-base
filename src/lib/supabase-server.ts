@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
+/*import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
@@ -21,4 +21,15 @@ export async function createClient() {
       },
     }
   )
-}
+}*/
+
+// THIS FILE MUST NEVER BE IMPORTED IN A CLIENT COMPONENT
+// Service role is server-only
+
+import "server-only";
+import { createClient } from '@supabase/supabase-js'
+
+export const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE!
+)

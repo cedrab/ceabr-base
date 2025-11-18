@@ -106,18 +106,27 @@ export default function StudyHeroDashboard() {
             </p>
             <button
               onClick={async () => {
-                const res = await fetch("/api/stripe/checkout", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    user_id: user.id,
-                    price_id: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO,
-                    app_name: "studyhero",
-                  }),
-                });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-              }}
+                          if (!user) {
+                            alert("Tu dois être connecté pour passer en PRO.");
+                            router.push("/login");
+                            return;
+                          }
+
+                          const res = await fetch("/api/stripe/checkout", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              user_id: user.id,
+                              price_id: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO,
+                              app_name: "studyhero",
+                            }),
+                          });
+
+                          const data = await res.json();
+                          if (data.url) window.location.href = data.url;
+                        }}
+
+
               className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-semibold"
             >
               Passer en version Pro

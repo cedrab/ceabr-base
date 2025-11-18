@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import * as pdfParse from "pdf-parse"; // ✅ compatible Node pur
+import { parsePDF } from "@/lib/pdf-parser";
 
-export const runtime = "nodejs"; // 👈 obligatoire pour autoriser fs/FileReader
+export const runtime = "nodejs"; // nécessaire pour pdf-parse
 
 export async function POST(req: Request) {
   try {
@@ -12,20 +12,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Aucun fichier reçu." }, { status: 400 });
     }
 
-    // Convertir en buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    // Convertir le PDF reçu en Buffer Node.js
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Extraction du texte
-    const parsed = await (pdfParse as any)(buffer);
+    // Extraction du texte via fichier lib/pdf-parser.ts
+    const result = await parsePDF(buffer);
 
-    if (!parsed.text || parsed.text.trim().length === 0) {
-      return NextResponse.json({ error: "Aucun texte détecté dans le PDF." }, { status: 400 });
+    if (!result.text || result.text.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Aucun texte détecté dans le PDF." },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json({ text: parsed.text });
-  } catch (err: any) {
+    return NextResponse.json({ text: result.text });
+  } catch (err) {
     console.error("❌ Erreur API upload :", err);
-    return NextResponse.json({ error: "Erreur interne serveur PDF" }, { status: 500 });
+    return NextResponse.json(
+        { error: "Erreur interne serveur PDF" },
+        { status: 500 }
+    );
   }
 }

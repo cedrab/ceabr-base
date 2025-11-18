@@ -17,10 +17,11 @@ export default function UploadPDFPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("/api/pdf/upload", {
+      const res = await fetch("/api/pdf/extract", {
         method: "POST",
         body: formData,
       });
+
 
       const raw = await res.text(); // ✅ lire la réponse brute
       console.log("📩 Réponse brute :", raw);
